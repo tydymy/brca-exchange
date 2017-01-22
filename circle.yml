@@ -6,6 +6,7 @@ test:
         - npm run test -- -R xunit --reporter-options output=$CIRCLE_TEST_REPORTS/test-results.xml
         - cd ../pipeline/data && bash ./getdata
         - cd ../pipeline && pip install -r test-requirements.txt && pytest --junitxml=${CIRCLE_TEST_REPORTS}/pipeline-results.xml
+        - cd ../website && pip install -r test-requirements.txt && pytest --junitxml=${CIRCLE_TEST_REPORTS}/website-results.xml
 deployment:
     dev:
         branch: master
