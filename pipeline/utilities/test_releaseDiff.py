@@ -19,7 +19,9 @@ class TestStringMethods(unittest.TestCase):
                       'pyhgvs_Genomic_Coordinate_38',
                       'pyhgvs_Genomic_Coordinate_37',
                       'pyhgvs_Genomic_Coordinate_36',
-                      'pyhgvs_Protein'
+                      'pyhgvs_Protein',
+                      'Source_URL',
+                      'Submitter_ClinVar'
                      ]
         self.oldRow = {
                   'Pathogenicity_all': '',
@@ -344,12 +346,36 @@ class TestStringMethods(unittest.TestCase):
         releaseDiff.diff_json = self.diff_json
         variant = 'chr17:g.43049067:C>T'
         self.oldRow["Functional_analysis_result_LOVD"] = "-"
-        self.newRow['Source'] += ",ENIGMA"
+        self.newRow["Source"] += ",ENIGMA"
         v1v2 = releaseDiff.v1ToV2(self.fieldnames, self.fieldnames)
         change_type = v1v2.compareRow(self.oldRow, self.newRow)
         diff = releaseDiff.diff_json[variant]
         self.assertEqual(len(diff), 1)
         self.assertIs(change_type, "added_information")
+
+    def test_determine_diff_for_list_reorder_same_data(self):
+        releaseDiff.added_data = self.added_data
+        releaseDiff.diff = self.diff
+        releaseDiff.diff_json = self.diff_json
+        variant = 'chr17:g.43049067:C>T'
+        self.oldRow["Source_URL"] = "http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000296280, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000145181, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000076674, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000053792, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000185339"
+        self.newRow["Source_URL"] = "http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000185339, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000145181, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000053792, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000076674, http://www.ncbi.nlm.nih.gov/clinvar/?term=SCV000296280"
+        v1v2 = releaseDiff.v1ToV2(self.fieldnames, self.fieldnames)
+        change_type = v1v2.compareRow(self.oldRow, self.newRow)
+        self.assertEqual(releaseDiff.diff_json, {})
+        self.assertIsNone(change_type)
+
+    # def test_catches_formatting_changes(self):
+    #     releaseDiff.added_data = self.added_data
+    #     releaseDiff.diff = self.diff
+    #     releaseDiff.diff_json = self.diff_json
+    #     variant = 'chr17:g.43049067:C>T'
+    #     self.oldRow["Submitter_ClinVar"] = "c/o_University_of_Cambridge,The_Consortium_of_Investigators_of_Modifiers_of_BRCA1/2_(CIMBA),Evidence-based_Network_for_the_Interpretation_of_Germline_Mutant_Alleles_(ENIGMA)"
+    #     self.newRow["Submitter_ClinVar"] = "Consortium_of_Investigators_of_Modifiers_of_BRCA1/2_(CIMBA),_c/o_University_of_Cambridge,Evidence-based_Network_for_the_Interpretation_of_Germline_Mutant_Alleles_(ENIGMA)"
+    #     v1v2 = releaseDiff.v1ToV2(self.fieldnames, self.fieldnames)
+    #     change_type = v1v2.compareRow(self.oldRow, self.newRow)
+    #     self.assertEqual(releaseDiff.diff_json, {})
+    #     self.assertIsNone(change_type)
 
 if __name__ == '__main__':
     pass

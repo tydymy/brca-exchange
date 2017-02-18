@@ -92,8 +92,8 @@ class transformer(object):
         elif field == "Pathogenicity_all":
             return equivalentPathogenicityAllValues(oldValues, newValues)
         elif re.search(",", oldValues) and re.search(",", newValues):
-            oldTokens = oldValues.split(",")
-            newTokens = newValues.split(",")
+            oldTokens = map(str.strip, oldValues.split(","))
+            newTokens = map(str.strip, newValues.split(","))
             numberSharedTokens = 0
             for token in oldTokens:
                 if token in newTokens:
